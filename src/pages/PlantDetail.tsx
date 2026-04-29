@@ -8,7 +8,7 @@ import { useApp } from '../context/AppContext';
 import { getPlantById } from '../data/plants';
 import {
   categoryEmoji, statusColor, formatStatus, categoryColor,
-  formatCategory, phColor, locationIcon
+  formatCategory, phColor, locationIcon, formatLocation
 } from '../utils/plantHelpers';
 import { daysUntilWatering, daysUntilFeeding, daysGrown, nextWateringDate, nextFeedingDate } from '../utils/schedules';
 import { Amendment, FertilizerEntry, WateringEntry, PlantStatus } from '../types';
@@ -34,6 +34,8 @@ export default function PlantDetail() {
   const [feedProduct, setFeedProduct] = useState('');
   const [feedNpk, setFeedNpk] = useState('');
   const [feedAmount, setFeedAmount] = useState('');
+  const [feedUnit, setFeedUnit] = useState('tbsp');
+  const [feedMethod, setFeedMethod] = useState<FertilizerEntry['method']>('soil-drench');
   const [feedNote, setFeedNote] = useState('');
 
   // Log amendment modal
@@ -76,10 +78,10 @@ export default function PlantDetail() {
       id: crypto.randomUUID(),
       date: format(new Date(), 'yyyy-MM-dd'),
       product: feedProduct,
-      npk: feedNpk,
+      npk: feedNpk || undefined,
       amount: feedAmount || '1',
-      unit: 'tbsp',
-      method: 'soil-drench',
+      unit: feedUnit,
+      method: feedMethod,
       notes: feedNote || undefined,
     };
     updatePlant({ ...plant!, fertilizerHistory: [...plant!.fertilizerHistory, entry] });
@@ -87,6 +89,8 @@ export default function PlantDetail() {
     setFeedProduct('');
     setFeedNpk('');
     setFeedAmount('');
+    setFeedUnit('tbsp');
+    setFeedMethod('soil-drench');
     setFeedNote('');
   }
 
@@ -149,7 +153,7 @@ export default function PlantDetail() {
             <span className={`badge ${statusColor(plant.status)}`}>{formatStatus(plant.status)}</span>
             <span className={`badge ${categoryColor(plant.category)}`}>{formatCategory(plant.category)}</span>
             <span className="badge bg-garden-600 text-garden-200">
-              {locationIcon(plant.locationType)} {plant.locationType}
+              {locationIcon(plant.locationType)} {formatLocation(plant.locationType)}
             </span>
             {plant.tags.map(tag => (
               <span key={tag} className="badge bg-garden-700 text-garden-300">#{tag}</span>
@@ -262,21 +266,39 @@ export default function PlantDetail() {
               <input className="input" value={feedProduct} onChange={e => setFeedProduct(e.target.value)} placeholder="Fox Farm Big Bloom" />
             </div>
             <div>
-              <label className="label">NPK (e.g. 5-1-1)</label>
-              <input className="input" value={feedNpk} onChange={e => setFeedNpk(e.target.value)} placeholder="5-1-1" />
+              <label className="label">NPK Ratio (optional)</label>
+              <input className="input" value={feedNpk} onChange={e => setFeedNpk(e.target.value)} placeholder="e.g. 5-1-1, 0-10-10, organic" />
             </div>
             <div>
-              <label className="label">Amount (tbsp)</label>
-              <input className="input" type="number" value={feedAmount} onChange={e => setFeedAmount(e.target.value)} placeholder="1" />
+              <label className="label">Amount</label>
+              <input className="input" type="number" min="0" step="0.25" value={feedAmount} onChange={e => setFeedAmount(e.target.value)} placeholder="1" />
+            </div>
+            <div>
+              <label className="label">Unit</label>
+              <select className="select" value={feedUnit} onChange={e => setFeedUnit(e.target.value)}>
+                {['tbsp', 'tsp', 'oz', 'fl oz', 'cup', 'ml', 'g', 'lb'].map(u => (
+                  <option key={u} value={u}>{u}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label">Application Method</label>
+              <select className="select" value={feedMethod} onChange={e => setFeedMethod(e.target.value as FertilizerEntry['method'])}>
+                <option value="soil-drench">Soil drench</option>
+                <option value="foliar">Foliar spray</option>
+                <option value="top-dress">Top dress</option>
+                <option value="side-dress">Side dress</option>
+                <option value="fertigation">Fertigation</option>
+              </select>
             </div>
             <div>
               <label className="label">Notes</label>
-              <input className="input" value={feedNote} onChange={e => setFeedNote(e.target.value)} placeholder="Half strength" />
+              <input className="input" value={feedNote} onChange={e => setFeedNote(e.target.value)} placeholder="Half strength, pH adjusted…" />
             </div>
           </div>
           <div className="flex gap-3">
             <button className="btn-primary flex-1" onClick={logFeeding} disabled={!feedProduct}>Log Feeding</button>
-            <button className="btn-secondary flex-1" onClick={() => setShowFeedForm(false)}>Cancel</button>
+            <button className="btn-secondary flex-1" onClick={() => { setShowFeedForm(false); setFeedProduct(''); setFeedNpk(''); setFeedAmount(''); setFeedUnit('tbsp'); setFeedMethod('soil-drench'); setFeedNote(''); }}>Cancel</button>
           </div>
         </div>
       )}
