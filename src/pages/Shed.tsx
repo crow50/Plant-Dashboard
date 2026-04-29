@@ -72,7 +72,7 @@ export default function Shed() {
     setShowForm(false);
   }
 
-  function set<K extends keyof ShedSupply>(key: K, val: ShedSupply[K]) {
+  function set<K extends keyof Omit<ShedSupply, 'id'>>(key: K, val: Omit<ShedSupply, 'id'>[K]) {
     setForm(f => ({ ...f, [key]: val }));
   }
 
