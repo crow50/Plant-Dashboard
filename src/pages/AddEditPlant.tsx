@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Search, ChevronLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { GardenPlant, PlantCategory, LocationType, PlantStatus, SoilType } from '../types';
@@ -66,14 +66,28 @@ function defaultForm(): FormData {
 export default function AddEditPlant() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navState = location.state as { locationType?: LocationType; plantDbId?: string } | null;
   const { state, addPlant, updatePlant } = useApp();
   const isEdit = !!id;
   const existing = isEdit ? state.plants.find(p => p.id === id) : undefined;
 
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState<FormData>(defaultForm());
+  const [form, setForm] = useState<FormData>(() => {
+    const base = defaultForm();
+    if (!isEdit && navState?.locationType) base.locationType = navState.locationType;
+    return base;
+  });
   const [dbSearch, setDbSearch] = useState('');
   const [searchResults, setSearchResults] = useState(PLANT_DATABASE.slice(0, 8));
+
+  useEffect(() => {
+    if (!isEdit && navState?.plantDbId) {
+      selectDbPlant(navState.plantDbId);
+    }
+  // run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (existing) {
@@ -295,7 +309,7 @@ export default function AddEditPlant() {
                 {([
                   { value: 'in-ground', label: 'In Ground', emoji: '🌍', desc: 'Directly in the earth' },
                   { value: 'container', label: 'Container', emoji: '🪴', desc: 'Pot, bucket, raised bed' },
-                  { value: 'greenhouse', label: 'Garden Center', emoji: '🏡', desc: 'Browse & manage plants' },
+                  { value: 'greenhouse', label: 'Greenhouse', emoji: '🏡', desc: 'Temperature-controlled growing space' },
                   { value: 'indoor', label: 'Indoor', emoji: '🪟', desc: 'Inside the house' },
                 ] as { value: LocationType; label: string; emoji: string; desc: string }[]).map(opt => (
                   <button
