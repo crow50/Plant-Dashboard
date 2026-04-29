@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Search, ChevronLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { GardenPlant, PlantCategory, LocationType, PlantStatus, SoilType } from '../types';
@@ -66,17 +66,43 @@ function defaultForm(): FormData {
 export default function AddEditPlant() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navState = location.state as { locationType?: LocationType; plantDbId?: string } | null;
   const { state, addPlant, updatePlant } = useApp();
   const isEdit = !!id;
   const existing = isEdit ? state.plants.find(p => p.id === id) : undefined;
 
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState<FormData>(defaultForm());
+  const [form, setForm] = useState<FormData>(() => {
+    const base = defaultForm();
+    if (!isEdit && navState?.locationType) base.locationType = navState.locationType;
+    return base;
+  });
   const [dbSearch, setDbSearch] = useState('');
   const [searchResults, setSearchResults] = useState(PLANT_DATABASE.slice(0, 8));
 
+  // Tracks whether the plant is in-ground or container-based (drives the two-stage location UI)
+  type PlantMedium = 'in-ground' | 'container';
+  function mediumFrom(lt: LocationType): PlantMedium {
+    return lt === 'in-ground' ? 'in-ground' : 'container';
+  }
+  const [plantMedium, setPlantMedium] = useState<PlantMedium | null>(() => {
+    if (isEdit && existing) return mediumFrom(existing.locationType);
+    if (navState?.locationType) return mediumFrom(navState.locationType);
+    return null;
+  });
+
+  useEffect(() => {
+    if (!isEdit && navState?.plantDbId) {
+      selectDbPlant(navState.plantDbId);
+    }
+  // run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (existing) {
+      setPlantMedium(mediumFrom(existing.locationType));
       setForm({
         plantDbId: existing.plantDbId,
         name: existing.name,
@@ -139,7 +165,7 @@ export default function AddEditPlant() {
       locationType: form.locationType,
       status: form.status,
       plantedDate: form.plantedDate,
-      containerSize: form.locationType === 'container' ? form.containerSize : undefined,
+      containerSize: form.locationType !== 'in-ground' ? form.containerSize : undefined,
       plotSize: form.locationType === 'in-ground' ? form.plotSize : undefined,
       soilMix: {
         type: form.soilType,
@@ -286,47 +312,78 @@ export default function AddEditPlant() {
 
         {/* Step 2: Location */}
         {step === 2 && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <h2 className="text-lg font-semibold text-white">Where is it planted?</h2>
 
+            {/* Stage A: In Ground or Container */}
             <div>
-              <label className="label">Planting Location</label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className="label">Planting Method</label>
+              <div className="grid grid-cols-2 gap-3">
                 {([
-                  { value: 'in-ground', label: 'In Ground', emoji: '🌍', desc: 'Directly in the earth' },
-                  { value: 'container', label: 'Container', emoji: '🪴', desc: 'Pot, bucket, raised bed' },
-                  { value: 'greenhouse', label: 'Garden Center', emoji: '🏡', desc: 'Browse & manage plants' },
-                  { value: 'indoor', label: 'Indoor', emoji: '🪟', desc: 'Inside the house' },
-                ] as { value: LocationType; label: string; emoji: string; desc: string }[]).map(opt => (
+                  { value: 'in-ground' as const, emoji: '🌍', label: 'In Ground', desc: 'Directly in the earth or a raised bed' },
+                  { value: 'container' as const, emoji: '🪴', label: 'Container / Pot', desc: 'Pot, bucket, grow bag, or box' },
+                ]).map(opt => (
                   <button
                     key={opt.value}
-                    onClick={() => set('locationType', opt.value)}
-                    className={`text-left p-3 rounded-lg border transition-colors ${
-                      form.locationType === opt.value
+                    onClick={() => {
+                      setPlantMedium(opt.value);
+                      if (opt.value === 'in-ground') {
+                        set('locationType', 'in-ground');
+                      } else {
+                        // default container environment to outdoors
+                        set('locationType', 'container');
+                      }
+                    }}
+                    className={`text-left p-4 rounded-lg border transition-colors ${
+                      plantMedium === opt.value
                         ? 'border-garden-400 bg-garden-600'
                         : 'border-garden-600 bg-garden-700 hover:border-garden-500'
                     }`}
                   >
-                    <div className="text-xl mb-1">{opt.emoji}</div>
-                    <div className="font-medium text-sm">{opt.label}</div>
-                    <div className="text-xs text-garden-300">{opt.desc}</div>
+                    <div className="text-2xl mb-1.5">{opt.emoji}</div>
+                    <div className="font-medium text-sm text-white">{opt.label}</div>
+                    <div className="text-xs text-garden-300 mt-0.5">{opt.desc}</div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {form.locationType === 'container' && (
+            {/* Stage B: Environment — only for container plants */}
+            {plantMedium === 'container' && (
               <div>
-                <label className="label">Container Size</label>
-                <select className="select" value={form.containerSize} onChange={e => set('containerSize', e.target.value)}>
-                  {CONTAINER_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-                <p className="text-xs text-garden-400 mt-1">
-                  Container size affects how much water and nutrients the plant needs.
-                </p>
+                <label className="label">Where will it live?</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { value: 'container' as const, emoji: '🌤', label: 'Outdoors', desc: 'Outside in open air' },
+                    { value: 'indoor' as const, emoji: '🏠', label: 'Indoors', desc: 'Inside the house' },
+                    { value: 'greenhouse' as const, emoji: '🏡', label: 'Greenhouse', desc: 'Temp-controlled space' },
+                  ] as { value: LocationType; emoji: string; label: string; desc: string }[]).map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => set('locationType', opt.value)}
+                      className={`text-left p-3 rounded-lg border transition-colors ${
+                        form.locationType === opt.value
+                          ? 'border-garden-400 bg-garden-600'
+                          : 'border-garden-600 bg-garden-700 hover:border-garden-500'
+                      }`}
+                    >
+                      <div className="text-xl mb-1">{opt.emoji}</div>
+                      <div className="font-medium text-sm text-white">{opt.label}</div>
+                      <div className="text-xs text-garden-300">{opt.desc}</div>
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
+            {/* In-ground: outdoors is assumed */}
+            {plantMedium === 'in-ground' && (
+              <div className="bg-garden-700 rounded-lg p-3 text-sm text-garden-300 flex items-center gap-2">
+                <span>🌤</span> Outdoors — assumed for in-ground plantings
+              </div>
+            )}
+
+            {/* Follow-up: plot size for in-ground */}
             {form.locationType === 'in-ground' && (
               <div>
                 <label className="label">Plot / Bed Size</label>
@@ -336,6 +393,19 @@ export default function AddEditPlant() {
                   onChange={e => set('plotSize', e.target.value)}
                   placeholder="e.g. 4x8 ft raised bed"
                 />
+              </div>
+            )}
+
+            {/* Follow-up: container size for all container-based locations */}
+            {plantMedium === 'container' && (
+              <div>
+                <label className="label">Container Size</label>
+                <select className="select" value={form.containerSize} onChange={e => set('containerSize', e.target.value)}>
+                  {CONTAINER_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <p className="text-xs text-garden-400 mt-1">
+                  Container size affects watering frequency and nutrient needs.
+                </p>
               </div>
             )}
           </div>

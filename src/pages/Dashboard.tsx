@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Droplets, Zap, Wind, Eye, AlertTriangle,
-  CheckCircle2, Clock, Sprout, Package, ChevronRight, RefreshCw,
+  Clock, Sprout, Package, ChevronRight, RefreshCw,
   Sun, Cloud, CloudRain, Snowflake, Flame
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -408,12 +408,9 @@ export default function Dashboard() {
         <Link to="/garden-center" className="card p-5 hover:bg-garden-700 transition-colors group">
           <div className="text-4xl mb-2">🏡</div>
           <div className="font-semibold text-white">Garden Center</div>
-          <div className="text-sm text-garden-300">
-            {plants.filter(p => p.locationType === 'greenhouse').length} plants
-          </div>
+          <div className="text-sm text-garden-300">Browse plant catalog</div>
           <div className="mt-2">
-            <CheckCircle2 size={14} className="text-garden-400 inline" />
-            <span className="text-xs text-garden-400 ml-1">Controlled environment</span>
+            <span className="text-xs text-garden-400">Search &amp; add to your garden</span>
           </div>
         </Link>
       </div>
