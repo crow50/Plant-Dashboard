@@ -104,6 +104,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (geoData.length > 0) {
           finalLat = parseFloat(geoData[0].lat);
           finalLon = parseFloat(geoData[0].lon);
+          dispatch({
+            type: 'SET_PROFILE',
+            payload: { ...state.profile, lat: finalLat, lon: finalLon },
+          });
         }
       } catch {
         return;
