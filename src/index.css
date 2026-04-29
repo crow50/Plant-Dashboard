@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-garden-900 text-gray-100 font-sans;
+  }
+  * {
+    @apply box-border;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-garden-800 rounded-xl border border-garden-700 shadow-lg;
+  }
+  .card-sm {
+    @apply bg-garden-800 rounded-lg border border-garden-700 shadow-md;
+  }
+  .btn-primary {
+    @apply bg-garden-500 hover:bg-garden-400 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  }
+  .btn-secondary {
+    @apply bg-garden-700 hover:bg-garden-600 text-garden-100 font-medium px-4 py-2 rounded-lg transition-colors;
+  }
+  .btn-danger {
+    @apply bg-red-700 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  }
+  .input {
+    @apply bg-garden-700 border border-garden-600 text-gray-100 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-garden-400 placeholder-garden-400;
+  }
+  .label {
+    @apply block text-sm font-medium text-garden-200 mb-1;
+  }
+  .select {
+    @apply bg-garden-700 border border-garden-600 text-gray-100 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-garden-400;
+  }
+  .nav-link {
+    @apply flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-garden-300 hover:text-white hover:bg-garden-700 transition-colors text-xs font-medium;
+  }
+  .nav-link-active {
+    @apply flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-white bg-garden-600 text-xs font-medium;
+  }
+  .badge {
+    @apply text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.garden.600') transparent;
+  }
+}
