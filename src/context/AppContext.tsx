@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { AppState, GardenPlant, GardenProfile, ShedSupply, WeatherData } from '../types';
+import { validateAppState } from '../utils/validation';
 
 type Action =
   | { type: 'SET_PROFILE'; payload: GardenProfile }
@@ -73,8 +74,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        const parsed = JSON.parse(saved) as AppState;
-        dispatch({ type: 'LOAD_STATE', payload: { ...initialState, ...parsed, weather: null } });
+        const parsed = JSON.parse(saved);
+        const validated = validateAppState(parsed);
+        dispatch({ type: 'LOAD_STATE', payload: validated });
       } catch {
         // ignore corrupt storage
       }
