@@ -129,7 +129,7 @@ export default function PlantDetail() {
     <div className="py-4 max-w-3xl mx-auto space-y-5">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <button onClick={() => navigate('/garden')} className="text-garden-400 hover:text-white transition-colors mt-1">
+        <button onClick={() => navigate('/garden')} className="text-garden-400 hover:text-white transition-colors mt-1" aria-label="Back to garden" title="Back to garden">
           <ChevronLeft size={24} />
         </button>
         <div className="flex-1 min-w-0">
@@ -152,10 +152,10 @@ export default function PlantDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Link to={`/garden/edit/${plant.id}`} className="btn-secondary p-2">
+          <Link to={`/garden/edit/${plant.id}`} className="btn-secondary p-2" aria-label="Edit plant" title="Edit plant">
             <Edit size={16} />
           </Link>
-          <button onClick={() => setShowDeleteConfirm(true)} className="btn-danger p-2">
+          <button onClick={() => setShowDeleteConfirm(true)} className="btn-danger p-2" aria-label="Delete plant" title="Delete plant">
             <Trash2 size={16} />
           </button>
         </div>

@@ -237,10 +237,10 @@ export default function Shed() {
                             )}
                           </div>
                           <div className="flex gap-1">
-                            <button onClick={() => openEdit(supply)} className="text-garden-400 hover:text-white p-1">
+                            <button onClick={() => openEdit(supply)} className="text-garden-400 hover:text-white p-1" aria-label="Edit supply" title="Edit supply">
                               <Edit size={14} />
                             </button>
-                            <button onClick={() => deleteSupply(supply.id)} className="text-garden-400 hover:text-red-400 p-1">
+                            <button onClick={() => deleteSupply(supply.id)} className="text-garden-400 hover:text-red-400 p-1" aria-label="Delete supply" title="Delete supply">
                               <Trash2 size={14} />
                             </button>
                           </div>
