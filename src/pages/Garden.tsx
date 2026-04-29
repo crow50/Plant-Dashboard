@@ -4,7 +4,7 @@ import { Plus, Search, ChevronRight, Droplets, Zap } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { GardenPlant, PlantCategory, LocationType } from '../types';
 import {
-  categoryEmoji, categoryColor, statusColor, formatStatus, locationIcon, formatCategory
+  categoryEmoji, categoryColor, statusColor, formatStatus, locationIcon, formatCategory, formatLocation
 } from '../utils/plantHelpers';
 import { daysUntilWatering, daysUntilFeeding } from '../utils/schedules';
 
@@ -23,7 +23,7 @@ const LOCATION_TABS: { value: LocationType | 'all'; label: string; emoji: string
   { value: 'in-ground', label: 'In Ground', emoji: '🌍' },
   { value: 'container', label: 'Containers', emoji: '🪴' },
   { value: 'indoor', label: 'Indoor', emoji: '🪟' },
-  { value: 'greenhouse', label: 'Garden Center', emoji: '🏠' },
+  { value: 'greenhouse', label: 'Greenhouse', emoji: '🏡' },
 ];
 
 function PlantCard({ plant }: { plant: GardenPlant }) {
@@ -55,7 +55,7 @@ function PlantCard({ plant }: { plant: GardenPlant }) {
               {formatCategory(plant.category)}
             </span>
             <span className="badge bg-garden-600 text-garden-200">
-              {locationIcon(plant.locationType)} {plant.locationType}
+              {locationIcon(plant.locationType)} {formatLocation(plant.locationType)}
             </span>
           </div>
           <div className="flex gap-3 mt-2">
