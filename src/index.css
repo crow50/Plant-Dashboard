@@ -1,6 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+          --color-garden-50:  #f0f7e6;
+          --color-garden-100: #dff0c0;
+          --color-garden-200: #c0e085;
+          --color-garden-300: #9dcc4d;
+          --color-garden-400: #7eb82a;
+          --color-garden-500: #5e9a14;
+          --color-garden-600: #4a7c0f;
+          --color-garden-700: #3a600d;
+          --color-garden-800: #2d4a0f;
+          --color-garden-900: #1a2e08;
+        }
 
 @layer base {
   body {
@@ -50,6 +61,6 @@
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.garden.600') transparent;
+    scrollbar-color: var('colors.garden.600') transparent;
   }
 }
