@@ -91,7 +91,7 @@ export default function Greenhouse() {
             </div>
             <div className="bg-garden-700 rounded-lg p-3">
               <div className="text-garden-400 text-xs mb-1">Sun</div>
-              <div className="text-white capitalize">{selected.sunlight}</div>
+              <div className="text-white capitalize">{selected.sunRequirement.replace(/-/g, ' ')}</div>
             </div>
             <div className="bg-garden-700 rounded-lg p-3">
               <div className="text-garden-400 text-xs mb-1">Days to Harvest</div>
