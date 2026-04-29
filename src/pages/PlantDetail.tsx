@@ -12,7 +12,7 @@ import {
 } from '../utils/plantHelpers';
 import { daysUntilWatering, daysUntilFeeding, daysGrown, nextWateringDate, nextFeedingDate } from '../utils/schedules';
 import { Amendment, FertilizerEntry, WateringEntry, PlantStatus } from '../types';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 type Tab = 'overview' | 'soil' | 'history' | 'schedule' | 'info';
 
@@ -636,7 +636,7 @@ export default function PlantDetail() {
             <div className="text-sm text-garden-300 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-garden-400 flex-shrink-0" />
-                <span>Planted: {format(new Date(plant.plantedDate), 'MMMM d, yyyy')}</span>
+                <span>Planted: {format(parseISO(plant.plantedDate), 'MMMM d, yyyy')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
