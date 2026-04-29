@@ -8,7 +8,7 @@ import { useApp } from '../context/AppContext';
 import { getPlantById } from '../data/plants';
 import {
   categoryEmoji, statusColor, formatStatus, categoryColor,
-  formatCategory, phColor, locationIcon
+  formatCategory, phColor, locationIcon, formatLocation
 } from '../utils/plantHelpers';
 import { daysUntilWatering, daysUntilFeeding, daysGrown, nextWateringDate, nextFeedingDate } from '../utils/schedules';
 import { Amendment, FertilizerEntry, WateringEntry, PlantStatus } from '../types';
@@ -153,7 +153,7 @@ export default function PlantDetail() {
             <span className={`badge ${statusColor(plant.status)}`}>{formatStatus(plant.status)}</span>
             <span className={`badge ${categoryColor(plant.category)}`}>{formatCategory(plant.category)}</span>
             <span className="badge bg-garden-600 text-garden-200">
-              {locationIcon(plant.locationType)} {plant.locationType}
+              {locationIcon(plant.locationType)} {formatLocation(plant.locationType)}
             </span>
             {plant.tags.map(tag => (
               <span key={tag} className="badge bg-garden-700 text-garden-300">#{tag}</span>
