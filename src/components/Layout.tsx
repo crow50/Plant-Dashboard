@@ -36,11 +36,11 @@ export default function Layout({ children }: LayoutProps) {
             <span>Shed</span>
           </NavLink>
           <NavLink
-            to="/greenhouse"
+            to="/garden-center"
             className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link'}
           >
             <Flower2 size={18} />
-            <span>Greenhouse</span>
+            <span>Garden Center</span>
           </NavLink>
           <NavLink
             to="/settings"

@@ -27,7 +27,7 @@ export default function App() {
         <Route path="/garden/add" element={<AddEditPlant />} />
         <Route path="/garden/edit/:id" element={<AddEditPlant />} />
         <Route path="/shed" element={<Shed />} />
-        <Route path="/greenhouse" element={<Greenhouse />} />
+        <Route path="/garden-center" element={<Greenhouse />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

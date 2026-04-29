@@ -295,7 +295,7 @@ export default function AddEditPlant() {
                 {([
                   { value: 'in-ground', label: 'In Ground', emoji: '🌍', desc: 'Directly in the earth' },
                   { value: 'container', label: 'Container', emoji: '🪴', desc: 'Pot, bucket, raised bed' },
-                  { value: 'greenhouse', label: 'Greenhouse', emoji: '🏠', desc: 'Controlled structure' },
+                  { value: 'greenhouse', label: 'Garden Center', emoji: '🏡', desc: 'Browse & manage plants' },
                   { value: 'indoor', label: 'Indoor', emoji: '🪟', desc: 'Inside the house' },
                 ] as { value: LocationType; label: string; emoji: string; desc: string }[]).map(opt => (
                   <button

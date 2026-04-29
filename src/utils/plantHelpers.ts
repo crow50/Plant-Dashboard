@@ -29,7 +29,7 @@ export function locationIcon(type: LocationType): string {
   const icons: Record<LocationType, string> = {
     'in-ground': '🌍',
     container: '🪴',
-    greenhouse: '🏠',
+    greenhouse: '🏡',
     indoor: '🪟',
   };
   return icons[type];

@@ -392,7 +392,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Greenhouse & Shed quick links */}
+      {/* Garden Center & Shed quick links */}
       <div className="grid grid-cols-2 gap-4">
         <Link to="/shed" className="card p-5 hover:bg-garden-700 transition-colors group">
           <div className="text-4xl mb-2">🏚️</div>
@@ -405,9 +405,9 @@ export default function Dashboard() {
             </div>
           )}
         </Link>
-        <Link to="/greenhouse" className="card p-5 hover:bg-garden-700 transition-colors group">
+        <Link to="/garden-center" className="card p-5 hover:bg-garden-700 transition-colors group">
           <div className="text-4xl mb-2">🏡</div>
-          <div className="font-semibold text-white">Greenhouse</div>
+          <div className="font-semibold text-white">Garden Center</div>
           <div className="text-sm text-garden-300">
             {plants.filter(p => p.locationType === 'greenhouse').length} plants
           </div>

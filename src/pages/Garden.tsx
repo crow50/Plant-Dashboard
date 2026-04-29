@@ -23,7 +23,7 @@ const LOCATION_TABS: { value: LocationType | 'all'; label: string; emoji: string
   { value: 'in-ground', label: 'In Ground', emoji: '🌍' },
   { value: 'container', label: 'Containers', emoji: '🪴' },
   { value: 'indoor', label: 'Indoor', emoji: '🪟' },
-  { value: 'greenhouse', label: 'Greenhouse', emoji: '🏠' },
+  { value: 'greenhouse', label: 'Garden Center', emoji: '🏠' },
 ];
 
 function PlantCard({ plant }: { plant: GardenPlant }) {

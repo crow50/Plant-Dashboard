@@ -18,7 +18,7 @@ export default function Greenhouse() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            🏡 Greenhouse
+            🏡 Garden Center
           </h1>
           <p className="text-garden-300 text-sm">{greenhousePlants.length} plants in controlled environment</p>
         </div>
@@ -61,7 +61,7 @@ export default function Greenhouse() {
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div className="bg-garden-700 rounded-lg p-3">
-              <div className="text-garden-400 text-xs mb-1">Greenhouse Benefit</div>
+              <div className="text-garden-400 text-xs mb-1">Garden Center Benefit</div>
               <div className="text-garden-200">
                 {weather.temperature < 32
                   ? '✓ Protecting plants from frost'
@@ -125,17 +125,17 @@ export default function Greenhouse() {
       {greenhousePlants.length === 0 ? (
         <div className="card p-12 text-center">
           <div className="text-5xl mb-3">🌿</div>
-          <h2 className="text-lg font-semibold text-white mb-2">No greenhouse plants yet</h2>
+          <h2 className="text-lg font-semibold text-white mb-2">No plants in the Garden Center yet</h2>
           <p className="text-garden-300 text-sm mb-4">
             Add plants and set their location to "Greenhouse" to see them here.
           </p>
           <Link to="/garden/add" className="btn-primary inline-flex items-center gap-2">
-            <Plus size={16} /> Add Greenhouse Plant
+            <Plus size={16} /> Add Plant
           </Link>
         </div>
       ) : (
         <div>
-          <h2 className="font-semibold text-white mb-3">Greenhouse Plants ({greenhousePlants.length})</h2>
+          <h2 className="font-semibold text-white mb-3">Garden Center Plants ({greenhousePlants.length})</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {greenhousePlants.map(p => {
               const waterDays = daysUntilWatering(p);
@@ -176,7 +176,7 @@ export default function Greenhouse() {
 
       {/* Tips */}
       <div className="card p-5">
-        <h2 className="font-semibold text-white mb-3">Greenhouse Tips</h2>
+        <h2 className="font-semibold text-white mb-3">Garden Center Tips</h2>
         <div className="space-y-2 text-sm text-garden-300">
           <p>• Ventilate when outside temperature exceeds 70°F to prevent overheating.</p>
           <p>• Monitor humidity — high humidity in enclosed spaces promotes fungal disease.</p>
