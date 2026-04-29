@@ -59,7 +59,7 @@ export default function PlantDetail() {
   function logWatering() {
     const entry: WateringEntry = {
       id: crypto.randomUUID(),
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd'),
       amount: waterAmount || '1',
       unit: 'gallons',
       method: 'hand',
@@ -74,7 +74,7 @@ export default function PlantDetail() {
   function logFeeding() {
     const entry: FertilizerEntry = {
       id: crypto.randomUUID(),
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd'),
       product: feedProduct,
       npk: feedNpk,
       amount: feedAmount || '1',
@@ -93,7 +93,7 @@ export default function PlantDetail() {
   function logAmendment() {
     const entry: Amendment = {
       id: crypto.randomUUID(),
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd'),
       product: amendProduct,
       amount: amendAmount || '1',
       unit: 'cup',
@@ -129,7 +129,12 @@ export default function PlantDetail() {
     <div className="py-4 max-w-3xl mx-auto space-y-5">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <button onClick={() => navigate('/garden')} className="text-garden-400 hover:text-white transition-colors mt-1" aria-label="Back to garden" title="Back to garden">
+        <button
+          onClick={() => navigate('/garden')}
+          aria-label="Back to Garden"
+          title="Back to Garden"
+          className="text-garden-400 hover:text-white transition-colors mt-1"
+        >
           <ChevronLeft size={24} />
         </button>
         <div className="flex-1 min-w-0">
@@ -152,10 +157,20 @@ export default function PlantDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Link to={`/garden/edit/${plant.id}`} className="btn-secondary p-2" aria-label="Edit plant" title="Edit plant">
+          <Link
+            to={`/garden/edit/${plant.id}`}
+            aria-label={`Edit ${plant.name}`}
+            title={`Edit ${plant.name}`}
+            className="btn-secondary p-2"
+          >
             <Edit size={16} />
           </Link>
-          <button onClick={() => setShowDeleteConfirm(true)} className="btn-danger p-2" aria-label="Delete plant" title="Delete plant">
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            aria-label={`Delete ${plant.name}`}
+            title={`Delete ${plant.name}`}
+            className="btn-danger p-2"
+          >
             <Trash2 size={16} />
           </button>
         </div>
