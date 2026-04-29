@@ -59,7 +59,7 @@ export default function PlantDetail() {
   function logWatering() {
     const entry: WateringEntry = {
       id: crypto.randomUUID(),
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd'),
       amount: waterAmount || '1',
       unit: 'gallons',
       method: 'hand',
@@ -74,7 +74,7 @@ export default function PlantDetail() {
   function logFeeding() {
     const entry: FertilizerEntry = {
       id: crypto.randomUUID(),
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd'),
       product: feedProduct,
       npk: feedNpk,
       amount: feedAmount || '1',
@@ -93,7 +93,7 @@ export default function PlantDetail() {
   function logAmendment() {
     const entry: Amendment = {
       id: crypto.randomUUID(),
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd'),
       product: amendProduct,
       amount: amendAmount || '1',
       unit: 'cup',
