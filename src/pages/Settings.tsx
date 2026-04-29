@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Save, RefreshCw, MapPin, Leaf, Database, Trash2, AlertTriangle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { GardenProfile, SoilType } from '../types';
-import { ALL_ZONES, US_STATES } from '../data/plants';
+import { US_STATES } from '../data/plants';
+import { inferZoneFromState, lookupZoneFromZip } from '../utils/zoneUtils';
 import { format } from 'date-fns';
 
 const SOIL_TYPES: { value: SoilType; label: string }[] = [
@@ -20,7 +21,7 @@ export default function Settings() {
 
   const [form, setForm] = useState({
     name: profile?.name ?? 'My Garden',
-    zone: profile?.zone ?? '7b',
+    zone: profile?.zone ?? inferZoneFromState(profile?.state ?? 'Virginia'),
     state: profile?.state ?? 'Virginia',
     zipCode: profile?.zipCode ?? '',
     soilType: profile?.soilType ?? 'loamy' as SoilType,
@@ -28,6 +29,7 @@ export default function Settings() {
   });
   const [saved, setSaved] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [zoneSource, setZoneSource] = useState<'state' | 'zip' | 'loading'>('zip');
 
   useEffect(() => {
     if (profile) {
@@ -41,6 +43,24 @@ export default function Settings() {
       });
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (form.zipCode.length === 5) {
+      setZoneSource('loading');
+      lookupZoneFromZip(form.zipCode).then(zone => {
+        if (zone) {
+          setForm(f => ({ ...f, zone }));
+          setZoneSource('zip');
+        } else {
+          setForm(f => ({ ...f, zone: inferZoneFromState(f.state) }));
+          setZoneSource('state');
+        }
+      });
+    } else if (form.zipCode.length === 0) {
+      setForm(f => ({ ...f, zone: inferZoneFromState(f.state) }));
+      setZoneSource('state');
+    }
+  }, [form.zipCode, form.state]);
 
   function handleSave() {
     if (!profile) return;
@@ -92,19 +112,11 @@ export default function Settings() {
           <label className="label">Garden Name</label>
           <input className="input" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="label">Hardiness Zone</label>
-            <select className="select" value={form.zone} onChange={e => setForm({ ...form, zone: e.target.value })}>
-              {ALL_ZONES.map(z => <option key={z} value={z}>{z}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="label">State</label>
-            <select className="select" value={form.state} onChange={e => setForm({ ...form, state: e.target.value })}>
-              {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
+        <div>
+          <label className="label">State</label>
+          <select className="select" value={form.state} onChange={e => setForm({ ...form, state: e.target.value })}>
+            {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
         <div>
           <label className="label">ZIP Code</label>
@@ -112,12 +124,18 @@ export default function Settings() {
             className="input"
             value={form.zipCode}
             onChange={e => setForm({ ...form, zipCode: e.target.value })}
-            placeholder="Used for weather data"
+            placeholder="e.g. 22301 — used for weather and zone"
             maxLength={5}
           />
-          <p className="text-xs text-garden-400 mt-1">
-            Your ZIP code is used to fetch real-time weather data for your location.
-          </p>
+        </div>
+        <div className="flex items-center gap-2 bg-garden-700 rounded-lg px-4 py-3">
+          <span className="text-garden-400 text-xs">Hardiness Zone</span>
+          <span className="text-white font-semibold ml-auto">
+            {zoneSource === 'loading' ? '…' : form.zone}
+          </span>
+          <span className="text-garden-400 text-xs">
+            {zoneSource === 'zip' ? '(from ZIP)' : zoneSource === 'loading' ? '' : '(from state)'}
+          </span>
         </div>
       </div>
 
@@ -226,9 +244,9 @@ export default function Settings() {
 
       {/* Zone reference */}
       <div className="card p-5">
-        <h2 className="font-semibold text-white mb-3">Zone Info: {profile?.zone}</h2>
+        <h2 className="font-semibold text-white mb-3">Hardiness Zone: {profile?.zone}</h2>
         <div className="text-sm text-garden-300 space-y-2">
-          <p>Your current zone determines which plants will survive your winters and thrive in your climate.</p>
+          <p>Your zone is automatically detected from your ZIP code, or estimated from your state.</p>
           <p>Zone numbers represent the average annual extreme minimum temperature in 10°F increments, with 'a' and 'b' subdivisions of 5°F each.</p>
           <p className="text-garden-400 text-xs">
             Visit planthardiness.ars.usda.gov for the interactive USDA map.

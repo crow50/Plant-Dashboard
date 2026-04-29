@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Flower2, MapPin, Leaf } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { GardenProfile, SoilType } from '../types';
-import { ALL_ZONES, US_STATES } from '../data/plants';
+import { US_STATES } from '../data/plants';
+import { inferZoneFromState, lookupZoneFromZip } from '../utils/zoneUtils';
 
 const SOIL_TYPES: { value: SoilType; label: string; desc: string }[] = [
   { value: 'loamy', label: 'Loamy', desc: 'Ideal mix of sand, silt, and clay' },
@@ -18,12 +19,31 @@ export default function Setup() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     name: 'My Garden',
-    zone: '7b',
+    zone: inferZoneFromState('Virginia'),
     state: 'Virginia',
     zipCode: '',
     soilType: 'loamy' as SoilType,
     basePh: 6.5,
   });
+  const [zoneSource, setZoneSource] = useState<'state' | 'zip' | 'loading'>('state');
+
+  useEffect(() => {
+    if (form.zipCode.length === 5) {
+      setZoneSource('loading');
+      lookupZoneFromZip(form.zipCode).then(zone => {
+        if (zone) {
+          setForm(f => ({ ...f, zone }));
+          setZoneSource('zip');
+        } else {
+          setForm(f => ({ ...f, zone: inferZoneFromState(f.state) }));
+          setZoneSource('state');
+        }
+      });
+    } else {
+      setForm(f => ({ ...f, zone: inferZoneFromState(f.state) }));
+      setZoneSource('state');
+    }
+  }, [form.zipCode, form.state]);
 
   function submit() {
     const profile: GardenProfile = {
@@ -76,19 +96,6 @@ export default function Setup() {
                 placeholder="My Backyard Garden"
               />
             </div>
-            <div>
-              <label className="label">USDA Hardiness Zone</label>
-              <select
-                className="select"
-                value={form.zone}
-                onChange={e => setForm({ ...form, zone: e.target.value })}
-              >
-                {ALL_ZONES.map(z => <option key={z} value={z}>{z}</option>)}
-              </select>
-              <p className="text-xs text-garden-400 mt-1">
-                Not sure? Visit planthardiness.ars.usda.gov to find your zone.
-              </p>
-            </div>
             <button className="btn-primary w-full mt-4" onClick={() => setStep(2)}>
               Continue →
             </button>
@@ -121,6 +128,15 @@ export default function Setup() {
                 placeholder="e.g. 22301"
                 maxLength={5}
               />
+            </div>
+            <div className="flex items-center gap-2 bg-garden-700 rounded-lg px-4 py-3">
+              <span className="text-garden-400 text-xs">Hardiness Zone</span>
+              <span className="text-white font-semibold ml-auto">
+                {zoneSource === 'loading' ? '…' : form.zone}
+              </span>
+              <span className="text-garden-400 text-xs">
+                {zoneSource === 'zip' ? '(from ZIP)' : zoneSource === 'loading' ? '' : '(from state)'}
+              </span>
             </div>
             <div className="flex gap-3 mt-4">
               <button className="btn-secondary flex-1" onClick={() => setStep(1)}>← Back</button>
