@@ -175,7 +175,7 @@ export default function AddEditPlant() {
     <div className="py-4 max-w-2xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate(-1)} className="text-garden-400 hover:text-white transition-colors">
+        <button onClick={() => navigate(-1)} className="text-garden-400 hover:text-white transition-colors" aria-label="Go back" title="Go back">
           <ChevronLeft size={24} />
         </button>
         <h1 className="text-2xl font-bold text-white">

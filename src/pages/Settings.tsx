@@ -44,6 +44,7 @@ export default function Settings() {
 
   function handleSave() {
     if (!profile) return;
+    const zipChanged = form.zipCode !== profile.zipCode;
     const updated: GardenProfile = {
       ...profile,
       name: form.name,
@@ -53,13 +54,13 @@ export default function Settings() {
       soilType: form.soilType,
       basePh: form.basePh,
       updatedAt: new Date().toISOString(),
-      lat: undefined,
-      lon: undefined,
+      lat: zipChanged ? undefined : profile.lat,
+      lon: zipChanged ? undefined : profile.lon,
     };
     setProfile(updated);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
-    refreshWeather();
+    if (zipChanged) refreshWeather();
   }
 
   function handleReset() {
