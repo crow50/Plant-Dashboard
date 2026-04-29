@@ -64,6 +64,3 @@ export function formatCategory(category: PlantCategory): string {
   return category.charAt(0).toUpperCase() + category.slice(1);
 }
 
-export function formatLocation(type: LocationType): string {
-  return type.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-}
