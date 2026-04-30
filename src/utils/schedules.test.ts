@@ -65,6 +65,55 @@ describe('schedules utils', () => {
       // NOW = 2023-05-10. diff = 11 - 10 = 1
       expect(daysUntilWatering(plant)).toBe(1);
     });
+
+    it('uses the most recent watering history date when multiple exist', () => {
+      const plant = createDummyPlant({
+        wateringHistory: [
+          { id: 'w1', date: '2023-05-06T12:00:00Z', amount: '1', unit: 'gallons', method: 'hand' },
+          { id: 'w2', date: '2023-05-07T12:00:00Z', amount: '1', unit: 'gallons', method: 'hand' },
+          { id: 'w3', date: '2023-05-09T12:00:00Z', amount: '1', unit: 'gallons', method: 'hand' },
+        ],
+      });
+      // Next date = 2023-05-09 + 3 days = 2023-05-12
+      // NOW = 2023-05-10. diff = 12 - 10 = 2
+      expect(daysUntilWatering(plant)).toBe(2);
+    });
+
+    it('respects an explicitly provided "now" date', () => {
+      const plant = createDummyPlant({
+        wateringHistory: [
+          { id: 'w1', date: '2023-05-08T12:00:00Z', amount: '1', unit: 'gallons', method: 'hand' },
+        ],
+      });
+      // Next date = 2023-05-08 + 3 days = 2023-05-11
+      // Explicit NOW = 2023-05-12. diff = 11 - 12 = -1
+      const explicitNow = new Date('2023-05-12T12:00:00Z');
+      expect(daysUntilWatering(plant, explicitNow)).toBe(-1);
+    });
+
+    it('handles frequencyDays of 0', () => {
+      const plant = createDummyPlant({
+        wateringSchedule: { frequencyDays: 0 },
+        wateringHistory: [
+          { id: 'w1', date: '2023-05-08T12:00:00Z', amount: '1', unit: 'gallons', method: 'hand' },
+        ],
+      });
+      // Next date = 2023-05-08 + 0 days = 2023-05-08
+      // NOW = 2023-05-10. diff = 08 - 10 = -2
+      expect(daysUntilWatering(plant)).toBe(-2);
+    });
+
+    it('returns 0 when the next watering date is exactly today', () => {
+      const plant = createDummyPlant({
+        wateringSchedule: { frequencyDays: 2 },
+        wateringHistory: [
+          { id: 'w1', date: '2023-05-08T12:00:00Z', amount: '1', unit: 'gallons', method: 'hand' },
+        ],
+      });
+      // Next date = 2023-05-08 + 2 days = 2023-05-10
+      // NOW = 2023-05-10. diff = 10 - 10 = 0
+      expect(daysUntilWatering(plant)).toBe(0);
+    });
   });
 
   describe('daysUntilFeeding', () => {
