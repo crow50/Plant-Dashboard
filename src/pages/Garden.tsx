@@ -118,7 +118,6 @@ export default function Garden() {
     flowers: [],
     other: [],
   };
-  filtered.forEach(p => byCategory[p.category].push(p));
 
   const byLocation: Record<LocationType, GardenPlant[]> = {
     'in-ground': [],
@@ -126,7 +125,11 @@ export default function Garden() {
     greenhouse: [],
     indoor: [],
   };
-  filtered.forEach(p => byLocation[p.locationType].push(p));
+
+  filtered.forEach(p => {
+    byCategory[p.category].push(p);
+    byLocation[p.locationType].push(p);
+  });
 
   const [viewMode, setViewMode] = useState<'category' | 'location' | 'list'>('category');
 
