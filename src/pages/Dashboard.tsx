@@ -6,9 +6,8 @@ import {
   Sun, Cloud, CloudRain, Snowflake, Flame
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { GardenPlant } from '../types';
 import {
-  getPlantsNeedingWater, getPlantsNeedingFeeding,
-  getUpcomingWatering, getUpcomingFeeding,
   daysUntilWatering, daysUntilFeeding, nextWateringDate, nextFeedingDate
 } from '../utils/schedules';
 import { categoryEmoji, statusColor, formatStatus, locationIcon } from '../utils/plantHelpers';
@@ -31,12 +30,32 @@ export default function Dashboard() {
     if (!weather && profile) refreshWeather();
   }, [weather, profile, refreshWeather]);
 
-  const activePlants = plants.filter(p => p.status !== 'harvested');
-  const needWater = getPlantsNeedingWater(plants);
-  const needFeed = getPlantsNeedingFeeding(plants);
-  const upcomingWater = getUpcomingWatering(plants, 3);
-  const upcomingFeed = getUpcomingFeeding(plants, 7);
-  const readyToHarvest = plants.filter(p => p.status === 'ready-to-harvest');
+  const activePlants: GardenPlant[] = [];
+  const needWater: GardenPlant[] = [];
+  const needFeed: GardenPlant[] = [];
+  const upcomingWater: GardenPlant[] = [];
+  const upcomingFeed: GardenPlant[] = [];
+  const readyToHarvest: GardenPlant[] = [];
+
+  const now = new Date();
+  for (const p of plants) {
+    if (p.status !== 'harvested') {
+      activePlants.push(p);
+
+      const waterDays = daysUntilWatering(p, now);
+      if (waterDays <= 0) needWater.push(p);
+      else if (waterDays <= 3) upcomingWater.push(p);
+
+      const feedDays = daysUntilFeeding(p, now);
+      if (feedDays <= 0) needFeed.push(p);
+      else if (feedDays <= 7) upcomingFeed.push(p);
+    }
+
+    if (p.status === 'ready-to-harvest') {
+      readyToHarvest.push(p);
+    }
+  }
+
   const lowStockSupplies = shedSupplies.filter(s =>
     s.lowStockThreshold !== undefined && s.quantity <= s.lowStockThreshold
   );
