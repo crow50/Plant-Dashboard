@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { getPlantById } from '../data/plants';
+import { COMMON_ISSUES } from '../data/commonIssues';
 import {
   categoryEmoji, statusColor, formatStatus, categoryColor,
   formatCategory, phColor, locationIcon, formatLocation
@@ -421,9 +422,16 @@ export default function PlantDetail() {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {dbPlant.commonIssues.map(issue => (
-                  <span key={issue} className="badge bg-yellow-900/40 text-yellow-300 border border-yellow-800">
-                    {issue}
-                  </span>
+                  <div key={issue} className="relative group cursor-help">
+                    <span
+                      className="badge bg-yellow-900/40 text-yellow-300 border border-yellow-800"
+                    >
+                      {issue}
+                    </span>
+                    <div className="absolute z-10 invisible group-hover:visible bg-garden-800 text-garden-100 text-sm font-normal border border-garden-600 rounded-md p-2 shadow-xl bottom-full left-0 mb-1 w-max max-w-xs md:max-w-md">
+                      {COMMON_ISSUES[issue] || issue}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

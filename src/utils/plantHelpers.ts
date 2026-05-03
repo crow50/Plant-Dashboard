@@ -25,6 +25,16 @@ export function statusColor(status: PlantStatus): string {
   return colors[status];
 }
 
+export function formatLocation(type: LocationType): string {
+  const locations: Record<LocationType, string> = {
+    'in-ground': 'In Ground',
+    container: 'Container',
+    greenhouse: 'Greenhouse',
+    indoor: 'Indoor',
+  };
+  return locations[type];
+}
+
 export function locationIcon(type: LocationType): string {
   const icons: Record<LocationType, string> = {
     'in-ground': '🌍',
