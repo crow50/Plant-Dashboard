@@ -22,7 +22,7 @@ const initialState: AppState = {
   weather: null,
 };
 
-function reducer(state: AppState, action: Action): AppState {
+export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'LOAD_STATE':
       return action.payload;
