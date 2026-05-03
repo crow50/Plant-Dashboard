@@ -63,6 +63,7 @@ interface AppContextValue {
   updateSupply: (supply: ShedSupply) => void;
   deleteSupply: (id: string) => void;
   refreshWeather: () => Promise<void>;
+  loadState: (state: AppState) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -180,6 +181,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     updateSupply: s => dispatch({ type: 'UPDATE_SUPPLY', payload: s }),
     deleteSupply: id => dispatch({ type: 'DELETE_SUPPLY', payload: id }),
     refreshWeather,
+    loadState: s => dispatch({ type: 'LOAD_STATE', payload: s }),
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
