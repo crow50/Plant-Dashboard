@@ -79,7 +79,7 @@ export default function PlantDetail() {
       id: crypto.randomUUID(),
       date: format(new Date(), 'yyyy-MM-dd'),
       product: feedProduct,
-      npk: feedNpk || undefined,
+      npk: feedNpk,
       amount: feedAmount || '1',
       unit: feedUnit,
       method: feedMethod,

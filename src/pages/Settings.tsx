@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Save, RefreshCw, MapPin, Leaf, Database, Trash2, AlertTriangle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Save, RefreshCw, MapPin, Leaf, Database, Trash2, AlertTriangle, Upload } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { GardenProfile, SoilType } from '../types';
 import { US_STATES } from '../data/plants';
 import { inferZoneFromState, lookupZoneFromZip } from '../utils/zoneUtils';
 import { format } from 'date-fns';
+import { validateAppState } from '../utils/validation';
 
 const SOIL_TYPES: { value: SoilType; label: string }[] = [
   { value: 'loamy', label: 'Loamy' },
@@ -16,8 +17,9 @@ const SOIL_TYPES: { value: SoilType; label: string }[] = [
 ];
 
 export default function Settings() {
-  const { state, setProfile, refreshWeather } = useApp();
+  const { state, setProfile, refreshWeather, loadState } = useApp();
   const { profile, plants, shedSupplies } = state;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     name: profile?.name ?? 'My Garden',
@@ -97,6 +99,29 @@ export default function Settings() {
     a.download = `plant-dashboard-${format(new Date(), 'yyyy-MM-dd')}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        const validated = validateAppState(json);
+        loadState(validated);
+        alert('Data imported successfully!');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to import data. Please check the file format.');
+      }
+    };
+    reader.readAsText(file);
+    // Reset the input so the same file can be imported again if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   }
 
   return (
@@ -217,9 +242,21 @@ export default function Settings() {
       {/* Export */}
       <div className="card p-5 space-y-3">
         <h2 className="font-semibold text-white">Data Management</h2>
-        <button onClick={exportData} className="btn-secondary w-full flex items-center justify-center gap-2">
-          <Database size={16} /> Export Data (JSON)
-        </button>
+        <div className="flex gap-3">
+          <button onClick={exportData} className="btn-secondary flex-1 flex items-center justify-center gap-2">
+            <Database size={16} /> Export Data
+          </button>
+          <button onClick={() => fileInputRef.current?.click()} className="btn-secondary flex-1 flex items-center justify-center gap-2">
+            <Upload size={16} /> Import Backup
+          </button>
+          <input
+            type="file"
+            accept=".json"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleImport}
+          />
+        </div>
         <button
           onClick={() => setShowResetConfirm(true)}
           className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300 py-2 text-sm transition-colors"
