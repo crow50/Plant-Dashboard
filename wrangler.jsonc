@@ -1,0 +1,7 @@
+{
+  "name": "plant-dashboard",
+  "compatibility_date": "2024-05-04",
+  "assets": {
+    "directory": "./dist"
+  }
+}
