@@ -61,6 +61,6 @@
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: var('colors.garden.600') transparent;
+    scrollbar-color: var(--color-garden-600) transparent;
   }
 }
