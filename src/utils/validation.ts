@@ -115,10 +115,10 @@ export function validateAppState(data: any): AppState {
   return {
     profile: validateProfile(data.profile),
     plants: Array.isArray(data.plants)
-      ? data.plants.map(validatePlant).filter((p): p is GardenPlant => p !== null)
+      ? data.plants.map(validatePlant).filter((p: GardenPlant | null): p is GardenPlant => p !== null)
       : [],
     shedSupplies: Array.isArray(data.shedSupplies)
-      ? data.shedSupplies.map(validateSupply).filter((s): s is ShedSupply => s !== null)
+      ? data.shedSupplies.map(validateSupply).filter((s: ShedSupply | null): s is ShedSupply => s !== null)
       : [],
     weather: null,
   };

@@ -44,7 +44,7 @@ export interface FertilizerEntry {
   id: string;
   date: string;
   product: string;
-  npk: string;
+  npk?: string;
   amount: string;
   unit: string;
   method: 'soil-drench' | 'foliar' | 'top-dress' | 'side-dress' | 'fertigation';
